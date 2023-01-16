@@ -2,11 +2,12 @@ import { useState } from "react";
 import * as secp from "ethereum-cryptography/secp256k1";
 import server from "./server";
 
-function Transfer({ publicKey, setBalance }) {
+function Transfer({ setBalance }) {
   const [sendAmount, setSendAmount] = useState("");
   const [recipient, setRecipient] = useState("");
   const [signer, setSigner] = useState("");
   const [privateKey, setPrivateKey] = useState("");
+  const [msgHash, setMsgHash] = useState("");
 
   const setValue = (setter) => (evt) => setter(evt.target.value);
 
@@ -19,11 +20,12 @@ function Transfer({ publicKey, setBalance }) {
       } = await server.post(`send`, {
         amount: parseInt(sendAmount),
         recipient,
-        signer
+        signer,
+        msgHash
       });
       setBalance(balance);
     } catch (ex) {
-      alert(ex.response.data.message);
+      alert(ex);
     }
   }
 
@@ -32,6 +34,7 @@ function Transfer({ publicKey, setBalance }) {
 
     // const messageHash = await secp.utils.sha256('You are signing a transaction');
     const messageHash = "a33321f98e4ff1c283c76998f14f57447545d339b3db534c6d886decb4209f28";
+    setMsgHash(messageHash)
     
 
     try {
