@@ -7,9 +7,9 @@ app.use(cors());
 app.use(express.json());
 
 const balances = {
-  "04955e6258803a573b3be194ea0ecba3604d8992c53126ff4db96126ead318b8c8be7a2522ce34b19b764a7e20f74d5c484b3c4613a9406ca1b2b8eb52867db488": 111,
-  "041cd4a137b35a05a30a2dc98f0118da538f14fa2c0336de5bd7651689f75b6ef140c885a1ae99107d75f6893cab958753736e5af304b0875d61540c4ecab65a9c": 222,
-  "04e6779ccff14865f26e40c7e9418b38a7e8a89ba70a124751696a990d4d3e6ca223704d41cc36b8986da7d416cc40b1398fc1834d3152a70da9c69e5ee804edea": 333,
+  "04a669ff80acd68198b91e09a496ab56b000ce05cea15651c8b7fb9ce01d099030b73ef4bd8a1363b892bda50ca5a8e8f797a6cddcac31eca9ea9f29ecdf6b7a32": 111,
+  "0481163410700a689957db5e050adcd2c5915f9cd74b255ab2a56136a24f4a1f9723a830949d74d2159b00f6dd09dc2b47eb410ae9451ee881002e4a962b99f8cc": 222,
+  "04a63ecdfed822a5cf0c885eed5df1c47cce2eef3e802221fc8ab3d4e7b776cd1df286b04e1953979d009255dae72a5bf0e61d3ceac970326d79fe634400d4dc8b": 333,
 };
 
 app.get("/balance/:address", (req, res) => {
@@ -20,7 +20,11 @@ app.get("/balance/:address", (req, res) => {
 
 app.post("/send", (req, res) => {
   // TODO: get signature from client side application
-  const { sender, recipient, amount } = req.body;
+  const { sender, recipient, amount, signer } = req.body;
+
+  // validate signer
+  // get the sender
+
 
   setInitialBalance(sender);
   setInitialBalance(recipient);
