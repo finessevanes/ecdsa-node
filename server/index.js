@@ -1,6 +1,5 @@
 const express = require("express");
 const { toHex } = require("ethereum-cryptography/utils");
-const { utf8ToBytes } = require("ethereum-cryptography/utils");
 
 const secp = require("ethereum-cryptography/secp256k1");
 
@@ -12,9 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 const balances = {
-  "04a669ff80acd68198b91e09a496ab56b000ce05cea15651c8b7fb9ce01d099030b73ef4bd8a1363b892bda50ca5a8e8f797a6cddcac31eca9ea9f29ecdf6b7a32": 111,
-  "0481163410700a689957db5e050adcd2c5915f9cd74b255ab2a56136a24f4a1f9723a830949d74d2159b00f6dd09dc2b47eb410ae9451ee881002e4a962b99f8cc": 222,
-  "04a63ecdfed822a5cf0c885eed5df1c47cce2eef3e802221fc8ab3d4e7b776cd1df286b04e1953979d009255dae72a5bf0e61d3ceac970326d79fe634400d4dc8b": 333,
+  "049031dad6b920dc4d9c4b8646bb7a900853a8428ee39dff13332f9bf6f6e145bb4aa2ad979c5f1cda0d6df605f36648e8014231e7089c9710ea5071523749ef86": 111,
+  "04115fe7c1f520805121e7c8befb21bad720c896fde0ef7e501bcb15049e6f63e45c6fd42cf5043e824d9ab1f4621f15983961027da2a29b479846b86a0bb40518": 222,
+  "04643cb963f6fb2667238d2d869ddcd7010865aa82601cd8f30dbe93a372cc1d22644e6a826978341078945828dd23dec353708e0e6b4e9eede6764903e10b29e6": 333,
 };
 
 app.get("/balance/:address", (req, res) => {
@@ -25,26 +24,25 @@ app.get("/balance/:address", (req, res) => {
 
 app.post("/send", async function (req, res) {
   // TODO: get signature from client side application
-  const { recipient, amount, signer, msgHash } = req.body;
+  const { recipient, amount, signature, recoveryBit, msgHash } = req.body;
   // get public key
-  // network errors :/
+
   const publicKey = await secp.recoverPublicKey(
-    utf8toBytes(msgHash),
-    utf8toBytes(signer[0]),
-    signer[1]
+    msgHash,
+    signature,
+    recoveryBit
   );
 
+  setInitialBalance(publicKey);
+  setInitialBalance(recipient);
 
-  // setInitialBalance(publicKey);
-  // setInitialBalance(recipient);
-
-  // if (balances[publicKey] < amount) {
-  //   res.status(400).send({ message: "Not enough funds!" });
-  // } else {
-  //   balances[publicKey] -= amount;
-  //   balances[recipient] += amount;
-  //   res.send({ balance: balances[publicKey] });
-  // }
+  if (balances[publicKey] < amount) {
+    res.status(400).send({ message: "Not enough funds!" });
+  } else {
+    balances[publicKey] -= amount;
+    balances[recipient] += amount;
+    res.send({ balance: balances[publicKey] });
+  }
 });
 
 app.listen(port, () => {
